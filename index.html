@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Aurelius AI — intelligent financial portfolio management with live market data, portfolio analytics, risk monitoring, crypto tracking and interactive charts.">
+<title>AI Financial Advisor — Intelligent Market & Wealth Analytics</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+:root{
+  --bg:#07090d;
+  --bg2:#0c1016;
+  --surface:#10151d;
+  --surface2:#151b25;
+  --surface3:#1a212d;
+  --text:#f5f7fa;
+  --muted:#99a3b1;
+  --line:rgba(255,255,255,.09);
+  --red:#ff4d63;
+  --red2:#c81f3b;
+  --green:#29d59a;
+  --blue:#5aa9ff;
+  --silver:#dce2ea;
+  --gold:#c8a96b;
+  --shadow:0 28px 90px rgba(0,0,0,.42);
+  --radius:24px;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:"Manrope",system-ui,sans-serif;
+  background:
+    radial-gradient(circle at 8% 5%,rgba(255,77,99,.08),transparent 24%),
+    radial-gradient(circle at 90% 20%,rgba(90,169,255,.07),transparent 24%),
+    linear-gradient(180deg,var(--bg),#0a0e14 50%,var(--bg));
+  color:var(--text);
+  line-height:1.6;
+}
+a{color:inherit;text-decoration:none}
+.container{width:95vw;max-width:none;margin:0 auto}
+
+.nav{
+  position:sticky;top:0;z-index:80;
+  background:rgba(7,9,13,.88);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:28px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:-.02em}
+.logo{
+  width:44px;height:44px;border-radius:13px;display:grid;place-items:center;
+  background:linear-gradient(145deg,var(--red),#8c152a);
+  color:white;font-family:"Space Grotesk",sans-serif;font-size:18px;
+  box-shadow:0 12px 34px rgba(255,77,99,.20)
+}
+.nav-links{display:flex;gap:26px;align-items:center;font-size:14px;color:#c3cad4;font-weight:700}
+.nav-links a:hover{color:white}
+.nav-pill{
+  padding:11px 16px;border-radius:999px;
+  background:linear-gradient(135deg,var(--red),var(--red2));
+  color:white;box-shadow:0 12px 30px rgba(255,77,99,.16)
+}
+
+.ticker-wrap{
+  border-bottom:1px solid var(--line);
+  background:#090c11;
+  padding:7px 0;
+}
+
+.hero{
+  min-height:790px;
+  position:relative;
+  display:flex;align-items:center;
+  background:
+    linear-gradient(90deg,rgba(5,7,10,.96) 0%,rgba(8,10,15,.82) 42%,rgba(8,10,15,.30) 100%),
+    url("https://images.unsplash.com/photo-1444653614773-995cb1ef9efa?auto=format&fit=crop&q=92&w=2400") center/cover;
+}
+.hero::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(0deg,rgba(5,7,10,.86),transparent 46%);
+  pointer-events:none;
+}
+.hero-grid{
+  position:relative;z-index:2;
+  width:95vw;margin:auto;
+  display:grid;grid-template-columns:.82fr 1.18fr;
+  gap:42px;align-items:center;padding:66px 0;
+}
+.hero-copy{
+  max-width:770px;
+  padding:8px 0;
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:9px 13px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.05);
+  color:#dbe2ea;font-size:13px;font-weight:700;
+}
+h1{
+  margin:20px 0 18px;
+  font-family:"Space Grotesk",sans-serif;
+  font-size:clamp(58px,6.4vw,96px);
+  line-height:.94;letter-spacing:-.055em;
+}
+.gradient{
+  background:linear-gradient(90deg,#fff 0%,#e1e6ec 35%,#ff6678 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-copy p{
+  max-width:700px;
+  color:#c0c8d1;
+  font-size:19px;
+}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:52px;padding:0 21px;border-radius:14px;font-size:14px;font-weight:800;
+  border:1px solid transparent;cursor:pointer;transition:.2s ease;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{
+  background:linear-gradient(135deg,var(--red),var(--red2));
+  color:white;
+  box-shadow:0 16px 42px rgba(255,77,99,.20)
+}
+.btn-secondary{
+  background:rgba(255,255,255,.06);
+  color:white;border-color:rgba(255,255,255,.14)
+}
+
+.market-card{
+  min-height:640px;
+  position:relative;
+  border-radius:26px;overflow:hidden;
+  background:#0c1118;
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:var(--shadow);
+}
+.market-card::before{
+  content:"";position:absolute;left:0;top:0;right:0;height:3px;z-index:3;
+  background:linear-gradient(90deg,var(--red),var(--blue),var(--green));
+}
+.card-head{
+  padding:20px 22px;
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:linear-gradient(90deg,#111721,#0e131b)
+}
+.card-head strong{font-family:"Space Grotesk",sans-serif;font-size:18px}
+.live-dot{display:inline-flex;align-items:center;gap:8px;color:#7be7bd;font-size:12px;font-weight:800}
+.live-dot::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 5px rgba(41,213,154,.08)}
+
+.section{padding:84px 0;background:var(--bg)}
+.section.alt,.section:nth-of-type(even){background:#0a0e14}
+.section-head{max-width:980px;margin-bottom:34px}
+.kicker{font-size:12px;text-transform:uppercase;letter-spacing:.16em;font-weight:800;color:var(--red)}
+.section-head h2{
+  margin:8px 0 14px;
+  font-family:"Space Grotesk",sans-serif;
+  font-size:clamp(40px,5vw,64px);
+  line-height:1.02;letter-spacing:-.045em
+}
+.section-head p{color:var(--muted);margin:0;font-size:17px}
+
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.panel{
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:linear-gradient(180deg,#111720,#0d1219);
+  box-shadow:0 18px 50px rgba(0,0,0,.20)
+}
+.metric,.risk-card,.form-panel,.result-panel,.chart-panel,.crypto-list{
+  transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease
+}
+.metric:hover,.risk-card:hover,.form-panel:hover,.result-panel:hover,.chart-panel:hover,.crypto-list:hover{
+  transform:translateY(-4px);
+  border-color:rgba(255,77,99,.22);
+  box-shadow:0 24px 60px rgba(0,0,0,.28)
+}
+.metric{padding:22px}
+.metric .label{font-size:11px;color:#7f8b99;font-weight:800;text-transform:uppercase;letter-spacing:.09em}
+.metric .value{font-size:30px;font-weight:800;letter-spacing:-.04em;margin-top:6px}
+.metric .change{font-size:12px;margin-top:6px}
+.pos{color:var(--green)}.neg{color:var(--red)}.neutral{color:#9ba6b4}
+
+.market-grid{display:grid;grid-template-columns:1.22fr .78fr;gap:20px}
+.chart-panel{padding:22px;min-height:480px}
+.chart-wrap{height:360px}
+.chart-title{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:12px}
+.chart-title h3{margin:0;font-family:"Space Grotesk",sans-serif;font-size:24px}
+.chart-title small{color:var(--muted)}
+.range-row{display:flex;gap:7px;flex-wrap:wrap}
+.range-btn{
+  border:1px solid var(--line);background:#111720;color:#b8c1cc;
+  padding:7px 10px;border-radius:9px;font-size:11px;font-weight:800;cursor:pointer
+}
+.range-btn.active{background:var(--red);border-color:var(--red);color:white}
+
+.crypto-list{padding:22px}
+.crypto-item{
+  display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;
+  padding:16px 0;border-bottom:1px solid var(--line)
+}
+.coin{display:flex;align-items:center;gap:11px}
+.coin-icon{
+  width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
+  font-weight:900;background:#171d27;color:#f0f3f6;border:1px solid var(--line)
+}
+.coin small{color:var(--muted);display:block}
+.coin-price{text-align:right}
+
+.portfolio-grid{display:grid;grid-template-columns:.86fr 1.14fr;gap:20px}
+.form-panel,.result-panel{padding:24px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:grid;gap:7px}.field.full{grid-column:1/-1}
+.field label{font-size:12px;color:#c4ccd6;font-weight:800}
+.field input,.field select{
+  width:100%;border:1px solid var(--line);border-radius:13px;
+  background:#0b1017;color:white;padding:13px 14px;outline:none;font:inherit
+}
+.field input:focus,.field select:focus{
+  border-color:rgba(255,77,99,.35);
+  box-shadow:0 0 0 3px rgba(255,77,99,.06)
+}
+.result-grid{display:grid;grid-template-columns:.72fr 1.28fr;gap:22px;align-items:center}
+.donut-wrap{height:290px}
+.insight-box{
+  padding:20px;border-radius:18px;
+  border:1px solid rgba(90,169,255,.13);
+  background:linear-gradient(145deg,rgba(90,169,255,.07),rgba(255,77,99,.035))
+}
+.insight-box h3{margin:0 0 8px;font-family:"Space Grotesk",sans-serif;font-size:24px}
+.insight-box p{margin:0;color:#aeb8c4}
+.alloc-list{display:grid;gap:10px;margin-top:18px}
+.alloc-row{display:flex;justify-content:space-between;gap:12px;font-size:13px}
+.alloc-row span:last-child{font-weight:900;color:#e7ebf0}
+
+.risk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.risk-card{padding:24px}
+.risk-card h3{margin:0 0 8px;font-family:"Space Grotesk",sans-serif;font-size:23px}
+.risk-card p{color:var(--muted);margin:0}
+.bar{height:8px;border-radius:99px;background:#171d27;overflow:hidden;margin-top:16px}
+.bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--red),var(--blue))}
+
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.tool-card{padding:24px}
+.tool-icon{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;background:#171d27;border:1px solid var(--line);font-size:20px}
+.tool-card h3{font-family:"Space Grotesk",sans-serif;margin:15px 0 7px}
+.tool-card p{color:var(--muted);margin:0 0 14px}
+.tool-card input,.tool-card select{
+  width:100%;border:1px solid var(--line);border-radius:12px;background:#0b1017;color:white;padding:11px 12px;margin-top:8px
+}
+.tool-result{margin-top:12px;font-weight:800;color:#e9edf2}
+
+.disclaimer{
+  margin-top:18px;padding:13px 15px;
+  border:1px solid rgba(255,255,255,.09);
+  background:rgba(255,255,255,.035);
+  border-radius:13px;color:#8f9aa8;font-size:12px
+}
+.hero .disclaimer{max-width:700px}
+
+.footer{
+  padding:48px 0 60px;
+  background:#05070a;
+  border-top:1px solid var(--line);
+  color:#8f99a6
+}
+.footer-inner{display:flex;justify-content:space-between;gap:22px;flex-wrap:wrap}
+
+@media(max-width:1000px){
+  .hero-grid,.market-grid,.portfolio-grid{grid-template-columns:1fr}
+  .grid-4{grid-template-columns:1fr 1fr}
+  .result-grid{grid-template-columns:1fr}
+  .risk-grid,.tools-grid{grid-template-columns:1fr}
+  .market-card{min-height:560px}
+}
+@media(max-width:650px){
+  .container,.hero-grid{width:calc(100% - 24px)}
+  .nav-links{display:none}
+  .hero{min-height:auto}
+  h1{font-size:52px}
+  .grid-4,.form-grid{grid-template-columns:1fr}
+  .field.full{grid-column:auto}
+  .hero-actions{flex-direction:column}.btn{width:100%}
+}
+</style>
+
+
+</head>
+<body>
+<nav class="nav"><div class="container nav-inner"><a class="brand" href="#top"><span class="logo">A</span><span>AI Financial Advisor</span></a><div class="nav-links"><a href="#markets">Markets</a><a href="#crypto">Crypto</a><a href="#portfolio">AI Analysis</a><a href="#tools">Tools</a><a href="#risk">Risk</a><a class="nav-pill" href="#portfolio">Start Analysis</a></div></div></nav>
+
+<div class="ticker-wrap"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>{"symbols":[{"proName":"NASDAQ:AAPL","title":"Apple"},{"proName":"NASDAQ:MSFT","title":"Microsoft"},{"proName":"NASDAQ:NVDA","title":"NVIDIA"},{"proName":"NASDAQ:GOOGL","title":"Alphabet"},{"proName":"NASDAQ:AMZN","title":"Amazon"},{"proName":"BITSTAMP:BTCUSD","title":"Bitcoin"},{"proName":"BITSTAMP:ETHUSD","title":"Ethereum"},{"proName":"FOREXCOM:SPXUSD","title":"S&P 500"}],"showSymbolLogo":true,"isTransparent":true,"displayMode":"adaptive","colorTheme":"dark","locale":"en"}</script></div></div>
+
+<header class="hero" id="top"><div class="container hero-grid"><section class="hero-copy"><div class="eyebrow">● Live market intelligence</div><h1>Your Financial Advisor,<br><span class="gradient">Powered by AI.</span></h1><p>Live markets, intelligent analysis, risk monitoring and personalized financial insights—brought together in one professional decision-support platform.</p><div class="hero-actions"><a class="btn btn-primary" href="#portfolio">Start Financial Analysis</a><a class="btn btn-secondary" href="#markets">Explore Markets</a></div><div class="disclaimer">Market data and analytics are informational and should be considered alongside your own financial circumstances.</div></section><section class="market-card"><div class="card-head"><div><strong>Global Market Overview</strong><br><small style="color:var(--muted)">Interactive market chart</small></div><span class="live-dot">Market feed</span></div><div class="tradingview-widget-container" style="height:575px"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"autosize":true,"symbol":"NASDAQ:NVDA","interval":"60","timezone":"Etc/UTC","theme":"dark","style":"1","locale":"en","allow_symbol_change":true,"calendar":false,"support_host":"https://www.tradingview.com"}</script></div></section></div></header>
+
+<main>
+<section class="section" id="markets"><div class="container"><div class="section-head"><div class="kicker">Market pulse</div><h2>One screen for the market signals that matter.</h2><p>Live or exchange-delayed data is displayed through connected market feeds, while crypto prices and charts refresh directly from public internet data.</p></div><div class="grid-4"><div class="panel metric"><div class="label">S&P 500</div><div class="value">Market feed</div><div class="change neutral">View in chart above</div></div><div class="panel metric"><div class="label">NASDAQ</div><div class="value">Market feed</div><div class="change neutral">Interactive symbol switching</div></div><div class="panel metric"><div class="label">Bitcoin</div><div class="value" id="btcTop">Loading…</div><div class="change" id="btcTopChange">Fetching live data</div></div><div class="panel metric"><div class="label">Ethereum</div><div class="value" id="ethTop">Loading…</div><div class="change" id="ethTopChange">Fetching live data</div></div></div></div></section>
+
+<section class="section" id="crypto"><div class="container"><div class="section-head"><div class="kicker">Live crypto intelligence</div><h2>Original market graph powered by current internet data.</h2><p>The price chart below is rendered directly in this webpage from live crypto market data, rather than using a static image.</p></div><div class="market-grid"><div class="panel chart-panel"><div class="chart-title"><div><h3>Bitcoin price trend</h3><small id="chartStatus">Loading live market history…</small></div><div class="range-row"><button class="range-btn" data-days="1">1D</button><button class="range-btn active" data-days="7">7D</button><button class="range-btn" data-days="30">30D</button></div></div><div class="chart-wrap"><canvas id="btcChart"></canvas></div></div><div class="panel crypto-list"><div class="card-head" style="padding:0 0 10px;border:0"><div><strong>Crypto market</strong><br><small style="color:var(--muted)">Live USD prices</small></div><span class="live-dot" id="cryptoUpdated">Connecting</span></div><div class="crypto-item"><div class="coin"><div class="coin-icon">₿</div><div><strong>Bitcoin</strong><small>BTC</small></div></div><div class="coin-price"><strong id="btcPrice">—</strong><small id="btcChange">—</small></div></div><div class="crypto-item"><div class="coin"><div class="coin-icon">Ξ</div><div><strong>Ethereum</strong><small>ETH</small></div></div><div class="coin-price"><strong id="ethPrice">—</strong><small id="ethChange">—</small></div></div><div class="crypto-item"><div class="coin"><div class="coin-icon">S</div><div><strong>Solana</strong><small>SOL</small></div></div><div class="coin-price"><strong id="solPrice">—</strong><small id="solChange">—</small></div></div><div class="disclaimer">Crypto markets can move rapidly. Prices may vary slightly across venues and update intervals.</div></div></div></div></section>
+
+<section class="section" id="portfolio"><div class="container"><div class="section-head"><div class="kicker">Insights intelligence</div><h2>Build a strategy around your financial profile.</h2><p>Set your capital level, time horizon and risk preference to generate a structured asset-allocation view and risk summary.</p></div><div class="portfolio-grid"><div class="panel form-panel"><div class="form-grid"><div class="field"><label for="portfolioValue">Insights value (USD)</label><input id="portfolioValue" type="number" value="100000" min="1000"></div><div class="field"><label for="riskLevel">Risk profile</label><select id="riskLevel"><option value="conservative">Conservative</option><option value="balanced" selected>Balanced</option><option value="growth">Growth</option></select></div><div class="field"><label for="horizon">Time horizon</label><select id="horizon"><option>1–3 years</option><option selected>3–7 years</option><option>7+ years</option></select></div><div class="field"><label for="cryptoExposure">Crypto exposure</label><select id="cryptoExposure"><option value="0">None</option><option value="5" selected>Moderate · 5%</option><option value="10">Higher · 10%</option></select></div><div class="field full"><button class="btn btn-primary" id="analyzeBtn" type="button">Generate Insights Analysis</button></div></div><div class="disclaimer">Analysis depends on the information entered and may not reflect taxes, liabilities, liquidity requirements, jurisdiction or all financial circumstances.</div></div><div class="panel result-panel"><div class="result-grid"><div class="donut-wrap"><canvas id="allocationChart"></canvas></div><div><div class="insight-box"><h3 id="insightTitle">Balanced strategy</h3><p id="insightText">A diversified mix of equities, fixed income, alternatives, cash and a limited crypto sleeve can spread risk across different market drivers.</p></div><div class="alloc-list" id="allocList"></div></div></div></div></div></div></section>
+
+
+<section class="section" id="tools">
+  <div class="container">
+    <div class="section-head">
+      <div class="kicker">Smart financial tools</div>
+      <h2>Useful calculations, built into the platform.</h2>
+      <p>Run quick financial checks without leaving the dashboard.</p>
+    </div>
+
+    <div class="tools-grid">
+      <div class="panel tool-card">
+        <div class="tool-icon">%</div>
+        <h3>Return Calculator</h3>
+        <p>Estimate percentage return between an initial and final value.</p>
+        <input id="retStart" type="number" value="10000" placeholder="Initial value">
+        <input id="retEnd" type="number" value="11500" placeholder="Final value">
+        <button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="calcReturn()">Calculate Return</button>
+        <div class="tool-result" id="retResult">Return: +15.00%</div>
+      </div>
+
+      <div class="panel tool-card">
+        <div class="tool-icon">↗</div>
+        <h3>Compound Growth</h3>
+        <p>Estimate how capital may grow at a fixed annual rate.</p>
+        <input id="cgPrincipal" type="number" value="25000" placeholder="Starting capital">
+        <input id="cgRate" type="number" value="8" placeholder="Annual rate %">
+        <input id="cgYears" type="number" value="10" placeholder="Years">
+        <button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="calcCompound()">Calculate Growth</button>
+        <div class="tool-result" id="cgResult">Estimated value: $53,973</div>
+      </div>
+
+      <div class="panel tool-card">
+        <div class="tool-icon">⚖</div>
+        <h3>Risk Capacity Check</h3>
+        <p>Quickly classify a general risk capacity from horizon and drawdown tolerance.</p>
+        <select id="riskYears">
+          <option value="2">1–3 years</option>
+          <option value="5" selected>3–7 years</option>
+          <option value="10">7+ years</option>
+        </select>
+        <select id="drawdown">
+          <option value="5">Low tolerance · 5%</option>
+          <option value="15" selected>Moderate · 15%</option>
+          <option value="30">High · 30%</option>
+        </select>
+        <button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="riskCheck()">Check Risk Capacity</button>
+        <div class="tool-result" id="riskCheckResult">Capacity: Balanced</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="risk"><div class="container"><div class="section-head"><div class="kicker">Risk analytics</div><h2>Understand the portfolio before chasing returns.</h2><p>Insights quality depends on diversification, liquidity, volatility tolerance and concentration—not just recent performance.</p></div><div class="risk-grid"><div class="panel risk-card"><h3>Diversification</h3><p>Measures how broadly the allocation is spread across different asset classes.</p><div class="bar"><i style="width:82%"></i></div></div><div class="panel risk-card"><h3>Liquidity</h3><p>Highlights how easily a portfolio can be converted into cash without major price impact.</p><div class="bar"><i style="width:76%"></i></div></div><div class="panel risk-card"><h3>Volatility exposure</h3><p>Reflects how sensitive the allocation may be to broad market swings.</p><div class="bar"><i style="width:58%"></i></div></div></div></div></section>
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div>
+      <strong style="color:white;font-size:18px">AI Financial Advisor</strong><br>
+      <span>Live markets · Intelligent analysis · Risk monitoring</span>
+    </div>
+    <div style="text-align:right">
+      <strong style="color:#f0f3f6">Designed, Built & Developed by Talha Nazir</strong><br>
+      <span>© 2026 Talha Nazir. All Rights Reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const fmtUSD=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:n>=1000?0:2}).format(n);
+const fmtPct=n=>`${n>=0?'+':''}${n.toFixed(2)}%`;
+const cls=n=>n>=0?'pos':'neg';
+let btcChart,allocationChart;
+
+async function loadCryptoPrices(){
+  try{
+    const res=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true',{cache:'no-store'});
+    if(!res.ok) throw new Error();
+    const d=await res.json();
+    [['bitcoin','btcPrice','btcChange','btcTop','btcTopChange'],['ethereum','ethPrice','ethChange','ethTop','ethTopChange'],['solana','solPrice','solChange',null,null]].forEach(([coin,pid,cid,topid,topcid])=>{
+      const price=d[coin]?.usd, ch=d[coin]?.usd_24h_change;
+      if(price==null)return;
+      document.getElementById(pid).textContent=fmtUSD(price);
+      const c=document.getElementById(cid);c.textContent=fmtPct(ch||0);c.className=cls(ch||0);
+      if(topid){document.getElementById(topid).textContent=fmtUSD(price);const tc=document.getElementById(topcid);tc.textContent=`${fmtPct(ch||0)} · 24h`;tc.className=`change ${cls(ch||0)}`;}
+    });
+    document.getElementById('cryptoUpdated').textContent=`Updated ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`;
+  }catch(e){
+    document.getElementById('cryptoUpdated').textContent='Feed unavailable';
+  }
+}
+
+async function loadBTCChart(days=7){
+  const status=document.getElementById('chartStatus');
+  status.textContent='Loading live market history…';
+  try{
+    const interval=days<=30?'hourly':'daily';
+    const res=await fetch(`https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=${days}&interval=${interval}`,{cache:'no-store'});
+    if(!res.ok)throw new Error();
+    const d=await res.json();
+    const labels=d.prices.map(([ts])=>new Date(ts).toLocaleString([],(days===1?{hour:'2-digit',minute:'2-digit'}:{month:'short',day:'numeric'})));
+    const values=d.prices.map(([,p])=>p);
+    if(btcChart)btcChart.destroy();
+    btcChart=new Chart(document.getElementById('btcChart'),{type:'line',data:{labels,datasets:[{data:values,borderColor:'#31d59b',backgroundColor:'rgba(49,213,155,.10)',borderWidth:2,fill:true,pointRadius:0,tension:.28}]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmtUSD(ctx.parsed.y)}}},scales:{x:{ticks:{color:'#7f95a5',maxTicksLimit:8},grid:{display:false}},y:{ticks:{color:'#7f95a5',callback:v=>'$'+Intl.NumberFormat('en-US',{notation:'compact'}).format(v)},grid:{color:'rgba(255,255,255,.05)'}}}}});
+    status.textContent=`Live internet data · ${days===1?'24 hours':days+' days'} · refreshed ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`;
+  }catch(e){status.textContent='Live chart feed temporarily unavailable. Try again shortly.';}
+}
+
+document.querySelectorAll('.range-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.range-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');loadBTCChart(Number(btn.dataset.days));}));
+
+const models={conservative:{equities:30,bonds:50,alternatives:10,cash:10,crypto:0},balanced:{equities:50,bonds:30,alternatives:10,cash:5,crypto:5},growth:{equities:68,bonds:12,alternatives:10,cash:0,crypto:10}};
+function renderAllocation(){
+  const risk=document.getElementById('riskLevel').value,crypto=Number(document.getElementById('cryptoExposure').value),value=Math.max(0,Number(document.getElementById('portfolioValue').value)||0),horizon=document.getElementById('horizon').value;
+  let a={...models[risk]},delta=crypto-a.crypto;a.crypto=crypto;a.equities=Math.max(0,a.equities-delta);
+  const labels=['Equities','Fixed income','Alternatives','Cash','Crypto'],vals=[a.equities,a.bonds,a.alternatives,a.cash,a.crypto];
+  if(allocationChart)allocationChart.destroy();
+  allocationChart=new Chart(document.getElementById('allocationChart'),{type:'doughnut',data:{labels,datasets:[{data:vals,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'72%',plugins:{legend:{position:'bottom',labels:{color:'#b9c9d4',boxWidth:10,usePointStyle:true}}}}});
+  document.getElementById('allocList').innerHTML=[['Equities',a.equities],['Fixed income',a.bonds],['Alternatives',a.alternatives],['Cash',a.cash],['Crypto',a.crypto]].map(([n,p])=>`<div class="alloc-row"><span>${n}</span><span>${p}% · ${fmtUSD(value*p/100)}</span></div>`).join('');
+  document.getElementById('insightTitle').textContent=risk[0].toUpperCase()+risk.slice(1)+' portfolio model';
+  document.getElementById('insightText').textContent=risk==='conservative'?`This model emphasizes capital stability and fixed income. With a ${horizon} horizon, the main trade-off is lower expected growth in exchange for reduced equity-market sensitivity.`:risk==='growth'?`This model carries greater equity and crypto sensitivity. With a ${horizon} horizon, short-term drawdowns can be materially larger, so liquidity and loss tolerance matter.`:`This model balances growth assets with fixed income and diversifiers. With a ${horizon} horizon, it aims to avoid relying on a single source of return.`;
+}
+document.getElementById('analyzeBtn').addEventListener('click',renderAllocation);
+loadCryptoPrices();loadBTCChart(7);renderAllocation();setInterval(loadCryptoPrices,60000);
+
+function calcReturn(){
+  const s=Number(document.getElementById('retStart').value)||0;
+  const e=Number(document.getElementById('retEnd').value)||0;
+  const r=s?((e-s)/s*100):0;
+  document.getElementById('retResult').textContent=`Return: ${r>=0?'+':''}${r.toFixed(2)}%`;
+}
+function calcCompound(){
+  const p=Number(document.getElementById('cgPrincipal').value)||0;
+  const rate=(Number(document.getElementById('cgRate').value)||0)/100;
+  const y=Number(document.getElementById('cgYears').value)||0;
+  const v=p*Math.pow(1+rate,y);
+  document.getElementById('cgResult').textContent=`Estimated value: ${fmtUSD(v)}`;
+}
+function riskCheck(){
+  const y=Number(document.getElementById('riskYears').value);
+  const d=Number(document.getElementById('drawdown').value);
+  let label='Conservative';
+  if((y>=5 && d>=15) || y>=10) label='Balanced';
+  if(y>=10 && d>=30) label='Growth-oriented';
+  document.getElementById('riskCheckResult').textContent=`Capacity: ${label}`;
+}
+
+</script>
+</body>
+</html>
